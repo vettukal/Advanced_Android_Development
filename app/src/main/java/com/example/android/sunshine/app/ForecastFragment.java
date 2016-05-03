@@ -15,8 +15,11 @@
  */
 package com.example.android.sunshine.app;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -32,9 +35,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.example.android.sunshine.app.data.WeatherContract;
-import com.example.android.sunshine.app.sync.SunshineSyncAdapter;
 
 /**
  * Encapsulates fetching the forecast and displaying it as a {@link ListView} layout.
@@ -254,6 +257,18 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             // If we don't need to restart the loader, and there's a desired position to restore
             // to, do so now.
             mListView.smoothScrollToPosition(mPosition);
+        }
+
+        // Checking whether the internet is connected or Not
+        ConnectivityManager cm =
+                (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+        if(!isConnected){
+            TextView tv = (TextView) getView().findViewById(R.id.listview_forecast_empty);
+            tv.setText("No internet connection");
         }
     }
 
